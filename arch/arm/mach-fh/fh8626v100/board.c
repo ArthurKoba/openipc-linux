@@ -1,4 +1,5 @@
 #include <linux/dma-mapping.h>
+#include <linux/etherdevice.h>
 #include <linux/fh_efuse.h>
 #include <linux/init.h>
 #include <linux/kernel.h>
@@ -47,6 +48,36 @@
 #include "platform.h"
 
 struct uart_port fh_serial_ports[FH_UART_NUMBER];
+
+static const u8 fh8626v100_ethaddr_sentinel[ETH_ALEN] __initconst = {
+	0x10, 0x20, 0x30, 0x40, 0x50, 0x60
+};
+
+static const u8 openipc_ethaddr_sentinel[ETH_ALEN] __initconst = {
+	0x00, 0x00, 0x23, 0x34, 0x45, 0x66
+};
+
+static u8 boot_ethaddr[ETH_ALEN] __initdata;
+
+static bool __init fh8626v100_mac_is_usable(const u8 *addr)
+{
+	return is_valid_ether_addr(addr) &&
+		!ether_addr_equal(addr, fh8626v100_ethaddr_sentinel) &&
+		!ether_addr_equal(addr, openipc_ethaddr_sentinel);
+}
+
+static int __init fh8626v100_parse_ethaddr(char *str)
+{
+	if (str && mac_pton(str, boot_ethaddr) &&
+	    fh8626v100_mac_is_usable(boot_ethaddr))
+		return 0;
+
+	eth_zero_addr(boot_ethaddr);
+	pr_warn("fh8626v100: ignoring invalid or sentinel ethaddr bootarg\n");
+	return 0;
+}
+
+early_param("ethaddr", fh8626v100_parse_ethaddr);
 
 static struct map_desc fh8626v100_io_desc[] __initdata = {
 	{
@@ -265,6 +296,18 @@ static struct resource fh_gmac_resources[] = {
 static struct fh_gmac_platform_data fh_gmac_data = {
 	.phy_reset_pin	= FH8626V100_PHY_RESET_GPIO,
 };
+
+static void __init fh8626v100_select_mac_address(void)
+{
+	if (fh8626v100_mac_is_usable(boot_ethaddr)) {
+		ether_addr_copy(fh_gmac_data.mac_addr, boot_ethaddr);
+		pr_info("fh8626v100: using ethaddr bootarg MAC %pM\n",
+			fh_gmac_data.mac_addr);
+	} else {
+		eth_zero_addr(fh_gmac_data.mac_addr);
+		pr_info("fh8626v100: no usable bootloader MAC address\n");
+	}
+}
 
 static struct platform_device fh_gmac_device = {
 	.name			= "fh_gmac",
@@ -800,6 +843,7 @@ static void __init fh8626v100_map_io(void)
 
 static void __init fh8626v100_board_init(void)
 {
+	fh8626v100_select_mac_address();
 	spi_register_board_info(fh8626v100_spi_devices,
 				ARRAY_SIZE(fh8626v100_spi_devices));
 	platform_add_devices(fh8626v100_devices,
