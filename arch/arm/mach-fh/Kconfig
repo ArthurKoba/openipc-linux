@@ -108,23 +108,18 @@ config MACH_FH8626V100
 	depends on ARCH_FH8626V100
 	help
 	  Enable the legacy non-device-tree machine description for
-	  FH8626V100 boards. It preserves the stock U-Boot ATAG handoff and
-	  the verified early MMIO mappings while the native OpenIPC kernel is
-	  brought up incrementally. Device support is added only after the
-	  corresponding FH8626V100 hardware contract is verified.
+	  FH8626V100 systems using the Fullhan platform-device model and
+	  bootloader ATAG handoff.
 
 config FH8626V100_ONCHIP_RTC
 	bool "Enable the FH8626V100 on-chip RTC"
-	default y
+	default n
 	depends on MACH_FH8626V100 && RTC_DRV_FH
 	help
-	  Register the FH8626V100 on-chip RTC platform device. Individual board
-	  profiles may disable it when the required clock/backup hardware is not
-	  available or has not been validated on that board. The Fullhan TSENSOR
-	  is accessed through the same RTC core command channel rather than a
-	  direct temperature MMIO register, so enabling this option is also a
-	  prerequisite for the legacy TSENSOR path but does not prove that either
-	  function works on a particular board.
+	  Register the FH8626V100 on-chip RTC platform device. Enable this only
+	  for boards where the RTC clock and backup domain are known to work.
+	  The Fullhan TSENSOR uses the same RTC command channel and requires the
+	  corresponding RTC hardware path to be available as well.
 
 config FH8626V100_SD0_1BIT
 	bool "Enable the FH8626V100 one-bit SD0 slot"
