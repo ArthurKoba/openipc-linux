@@ -2,6 +2,7 @@
 #define __FH8626V100_IOPAD_H
 
 #include <mach/pinctrl.h>
+#include <mach/board_config.h>
 #include <mach/pinctrl_osdep.h>
 
 /*
@@ -545,31 +546,7 @@ void fh_pinctrl_init_devicelist(OS_LIST *list)
 }
 
 char *fh_pinctrl_selected_devices[] = {
-	"I2C0",
-	"MIPI",
-	"PWM7",
-	"RMII",
-	"SADC_CHANL0",
-	"SADC_CHANL1",
-	"SSI0",
-	"UART0",
-	"GPIO0",
-	"GPIO1",
-	"GPIO2",
-	"GPIO3",
-	"GPIO6",
-	"GPIO11",
-	"GPIO13",
-	"GPIO14",
-	"GPIO4",
-	"GPIO5",
-	"GPIO19",
-	"GPIO20",
-	"GPIO21",
-	"GPIO25",
-	"GPIO26",
-	"GPIO27",
-	"GPIO28",
+	CONFIG_PINCTRL_SELECT
 };
 
 #endif /* __FH8626V100_IOPAD_H */

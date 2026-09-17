@@ -1,0 +1,28 @@
+#ifndef BOARD_CONFIG_H_
+#define BOARD_CONFIG_H_
+
+/*
+ * FH8626V100 board configuration used by the legacy Fullhan non-DT build.
+ * The top-level boardconfig target copies this file to
+ * arch/arm/mach-fh/include/mach/board_config.h before compiling the kernel.
+ *
+ * Keep SoC pin definitions in iopad.h; this list is the initial mux profile
+ * exercised on the ANJIA AJL33PQ0866. Per-device selection remains a kernel
+ * configuration/build concern until this legacy platform gains DT support.
+ */
+
+#define CONFIG_SD_CD_FIXED
+
+#define CONFIG_ISP_CLK_RATE	200000000
+#define CONFIG_JPEG_CLK_RATE	200000000
+#define CONFIG_VEU_CLK_RATE	300000000
+
+#define USB_VBUS_PWR_GPIO	(0xffffffff)
+
+#define CONFIG_PINCTRL_SELECT					\
+	"I2C0", "MIPI", "PWM7", "RMII", "SADC_CHANL0", "SADC_CHANL1", \
+	"SSI0", "UART0", "GPIO0", "GPIO1", "GPIO2", "GPIO3", "GPIO6", \
+	"GPIO11", "GPIO13", "GPIO14", "GPIO4", "GPIO5", "GPIO19", \
+	"GPIO20", "GPIO21", "GPIO25", "GPIO26", "GPIO27", "GPIO28"
+
+#endif /* BOARD_CONFIG_H_ */
