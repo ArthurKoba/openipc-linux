@@ -18,8 +18,8 @@
 #include <asm/mach/map.h>
 
 #include <mach/clock.h>
-#ifdef CONFIG_FH_DMAC
-#include <mach/fh_dmac_plat.h>
+#if defined(CONFIG_FH_DMAC) || defined(CONFIG_FH_AXI_DMAC)
+#include <mach/fh_dma_plat.h>
 #endif
 #include <mach/fh_efuse_plat.h>
 #include <mach/fh_gmac_plat.h>
@@ -485,8 +485,7 @@ static struct platform_device fh_efuse_device = {
 	.dev.platform_data	= &fh_efuse_data,
 };
 
-#ifdef CONFIG_FH_DMAC
-/* Resources and six-channel priority policy recovered from the stock kernel. */
+#if defined(CONFIG_FH_DMAC) || defined(CONFIG_FH_AXI_DMAC)
 static struct resource fh_dma_resources[] = {
 	{
 		.start	= DMAC_REG_BASE,
@@ -515,6 +514,21 @@ static struct platform_device fh_dma_device = {
 	.num_resources		= ARRAY_SIZE(fh_dma_resources),
 	.resource		= fh_dma_resources,
 	.dev.platform_data	= &fh_dma_data,
+};
+#endif
+
+#ifdef CONFIG_FH_AXI_DMAC
+static struct fh_axi_dma_platform_data fh_axi_dma_data = {
+	.chan_priority		= CHAN_PRIORITY_ASCENDING,
+	.clk_name		= "ahb_clk",
+};
+
+static struct platform_device fh_axi_dma_device = {
+	.name			= "fh_axi_dmac",
+	.id			= 0,
+	.num_resources		= ARRAY_SIZE(fh_dma_resources),
+	.resource		= fh_dma_resources,
+	.dev.platform_data	= &fh_axi_dma_data,
 };
 #endif
 
@@ -738,6 +752,9 @@ static struct platform_device *fh8626v100_devices[] __initdata = {
 	&fh_efuse_device,
 #ifdef CONFIG_FH_DMAC
 	&fh_dma_device,
+#endif
+#ifdef CONFIG_FH_AXI_DMAC
+	&fh_axi_dma_device,
 #endif
 #ifdef CONFIG_FH_DW_I2S
 	&fh_i2s_device,
