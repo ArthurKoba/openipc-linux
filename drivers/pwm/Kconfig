@@ -45,7 +45,7 @@ config PWM_FULLHAN
 	  be called fh_pwm.
 
 if PWM_FULLHAN
-if (ARCH_FH885xV200 || ARCH_FH865x)
+if (ARCH_FH885xV200 || ARCH_FH865x || ARCH_FH8626V100)
 config FH_PWM_NUM
 	int
 	prompt "Number of PWMs, range: 1~14"
