@@ -30,6 +30,11 @@ struct mdio_pin_mux_ref {
 unsigned int phy_support_list[] = {
 	FH_GMAC_PHY_IP101G,
 	FH_GMAC_PHY_RTL8201,
+	FH_GMAC_PHY_JL1101_4023,
+	FH_GMAC_PHY_JL1101_4024,
+	FH_GMAC_PHY_JL1101_4025,
+	FH_GMAC_PHY_JL1101_4026,
+	FH_GMAC_PHY_JL1101_4027,
 	FH_GMAC_PHY_TI83848,
 	FH_GMAC_PHY_INTERNAL,
 };
@@ -354,6 +359,11 @@ static int fh_mdio_set_mii(struct mii_bus *bus)
 
 	switch (pGmac->phydev->phy_id) {
 	case FH_GMAC_PHY_RTL8201:
+	case FH_GMAC_PHY_JL1101_4023:
+	case FH_GMAC_PHY_JL1101_4024:
+	case FH_GMAC_PHY_JL1101_4025:
+	case FH_GMAC_PHY_JL1101_4026:
+	case FH_GMAC_PHY_JL1101_4027:
 		fh_mdio_write(bus, phyid,
 				gmac_phyt_rtl8201_page_select, 7);
 		fh_mdio_write(bus, phyid,
