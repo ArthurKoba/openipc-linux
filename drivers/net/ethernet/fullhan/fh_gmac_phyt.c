@@ -48,6 +48,15 @@ struct mdio_pin_mux_ref _mdio_pin_ref_obj[] = {
 
 void external_phy_pin_sel(Gmac_Object *gmac, int flag)
 {
+#if defined(CONFIG_ARCH_FH8626V100)
+
+	/*
+	 * FH8626V100 configures RMII and the external PHY reset pin during
+	 * early non-DT machine pinctrl setup. Keep that validated static mux
+	 * while probing external PHY IDs instead of switching it dynamically.
+	 */
+	return;
+#else
 	int i;
 	char temp_buf[16] = {0};
 
@@ -84,8 +93,8 @@ void external_phy_pin_sel(Gmac_Object *gmac, int flag)
 				fh_pinctrl_set_oe("MAC_REF_CLK", 0);
 		}
 	}
+#endif
 }
-
 
 static int __fh_mdio_read(Gmac_Object *pGmac, int phyaddr, int phyreg)
 {
@@ -224,8 +233,10 @@ int auto_find_phy(Gmac_Object *gmac)
 		return -1;
 	}
 
+#if !defined(CONFIG_ARCH_FH8626V100)
 	if (strcmp(c_driver, "Generic PHY") == 0)
 		fh_pinctrl_sdev("RMII", 0);
+#endif
 
 	return 0;
 #endif
