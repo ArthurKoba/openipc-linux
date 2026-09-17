@@ -696,46 +696,34 @@ static struct platform_device fh_spi0_device = {
 
 static struct mtd_partition fh8626v100_spi_parts[] = {
 	/*
-	 * Keep the factory 8 MiB geometry: U-Boot and existing recovery notes
-	 * use these exact offsets. OpenIPC only changes the userspace-facing
-	 * names of data/app so standard overlay and sysupgrade code find them.
-	 *
-	 * MTD_WRITEABLE in mask_flags removes write permission. Protect
-	 * immutable bootstrap/U-Boot. The environment remains writable for
-	 * fw_setenv; kernel/rootfs are writable for sysupgrade; rootfs_data is
-	 * the persistent JFFS2 overlay. It combines the factory data+res ranges:
-	 * OpenIPC does not consume the proprietary resource filesystem, while a
-	 * full 1 MiB upper layer is materially safer than 512 KiB.
+	 * Match the OpenIPC 8 MiB NOR contract used by the native bootloader:
+	 * 256 KiB boot, 64 KiB environment, 2 MiB kernel, 5 MiB rootfs and the
+	 * remaining 704 KiB as rootfs_data.  The Fullhan bootstrap/U-Boot split
+	 * is internal to the boot partition and must not leak into Linux MTD
+	 * numbering, so rootfs remains /dev/mtdblock3 as expected by OpenIPC.
 	 */
 	{
-		.name		= "bootstrap",
+		.name		= "boot",
 		.offset		= 0,
-		.size		= SZ_64K,
-		.mask_flags	= MTD_WRITEABLE,
+		.size		= SZ_256K,
 	},
 	{
-		.name		= "uboot-env",
+		.name		= "env",
 		.offset		= MTDPART_OFS_APPEND,
 		.size		= SZ_64K,
-	},
-	{
-		.name		= "uboot",
-		.offset		= MTDPART_OFS_APPEND,
-		.size		= SZ_256K - SZ_64K,
-		.mask_flags	= MTD_WRITEABLE,
 	},
 	{
 		.name		= "kernel",
 		.offset		= MTDPART_OFS_APPEND,
-		.size		= SZ_2M + SZ_1M,
-	},
-	{
-		.name		= "rootfs_data",
-		.offset		= MTDPART_OFS_APPEND,
-		.size		= SZ_1M,
+		.size		= SZ_2M,
 	},
 	{
 		.name		= "rootfs",
+		.offset		= MTDPART_OFS_APPEND,
+		.size		= SZ_4M + SZ_1M,
+	},
+	{
+		.name		= "rootfs_data",
 		.offset		= MTDPART_OFS_APPEND,
 		.size		= MTDPART_SIZ_FULL,
 	},
