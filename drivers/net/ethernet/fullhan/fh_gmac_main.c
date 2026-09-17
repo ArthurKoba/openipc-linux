@@ -1049,8 +1049,8 @@ static int fh_gmac_probe(struct platform_device *pdev)
 	ndev->netdev_ops = &fh_gmac_netdev_ops;
 	fh_gmac_set_ethtool_ops(ndev);
 
-	ndev->hw_features = NETIF_F_SG | NETIF_F_IP_CSUM |
-			NETIF_F_HW_CSUM | NETIF_F_RXCSUM;
+	ndev->hw_features = NETIF_F_SG | NETIF_F_HW_CSUM |
+			NETIF_F_RXCSUM;
 	ndev->features |= ndev->hw_features | NETIF_F_HIGHDMA;
 	ndev->watchdog_timeo = msecs_to_jiffies(watchdog);
 	pGmac->msg_enable = netif_msg_init(debug, FH_GMAC_DEBUG);
